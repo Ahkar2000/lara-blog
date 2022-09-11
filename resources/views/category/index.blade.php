@@ -14,6 +14,7 @@
                     <tr>
                         <th>#</th>
                         <th>Title</th>
+                        <th>Owner</th>
                         <th>Control</th>
                         <th>Created</th>
                     </tr>
@@ -27,17 +28,22 @@
                             <br>
                             <span class="badge bg-secondary">{{ $category->slug }}</span>
                         </td>
+                        <td>{{ App\Models\User::find($category->user_id)->name }}</td>
                         <td>
-                            <a href="{{ route('category.edit',$category->id) }}" class="btn btn-sm btn-outline-dark">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <form action="{{ route('category.destroy',$category->id) }}" method="POST" class=" d-inline-block">
-                                @csrf
-                                @method('delete')
-                                <button class="btn btn-sm btn-outline-dark">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </form>
+                            @can('update',$category)
+                                <a href="{{ route('category.edit',$category->id) }}" class="btn btn-sm btn-outline-dark">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            @endcan
+                            @can('delete',$category)
+                                <form action="{{ route('category.destroy',$category->id) }}" method="POST" class=" d-inline-block">
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn btn-sm btn-outline-dark">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            @endcan
                         </td>
                         <td>
                             <p class="small mb-0 text-black-50">
