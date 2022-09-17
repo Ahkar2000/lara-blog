@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "bootstrap-icons": "^1.9.1",
-        "sweetalert2": "^11.4.32"
+        "sweetalert2": "^11.4.32",
+        "venobox": "^2.0.4"
     }
 }

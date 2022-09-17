@@ -1,0 +1,13 @@
+@import '../../node_modules/bootstrap-icons/font/bootstrap-icons.css';
+@import './bwvariables';
+
+$carousel-control-color: $primary;
+
+@import 'bootstrap/scss/bootstrap';
+@import './variables';
+@import '../../node_modules/venobox/dist/venobox.min.css';
+.post-detail-img{
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+}

@@ -10,6 +10,12 @@ class CategoryPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user){
+        if($user->role === 'admin' || $user->role === 'editor'){
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view any models.
      *
@@ -18,7 +24,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        
     }
 
     /**

@@ -5,6 +5,9 @@
     <a href="{{ route('test') }}" class="list-group-item list-group-item-action">
         Test Page
     </a>
+    <a href="{{ route('photo.index') }}" class="list-group-item list-group-item-action">
+        Gallery
+    </a>
 </div>
 
 <p class="small text-black-50 mb-1">Manage Post</p>
@@ -27,9 +30,11 @@
     </a>
 </div>
 
+@admin
 <p class="small text-black-50 mb-1">Users List</p>
 <div class="list-group mb-3">
     <a href="{{ route('user.index') }}" class="list-group-item list-group-item-action">
         Users List
     </a>
 </div>
+@endadmin

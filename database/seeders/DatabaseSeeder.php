@@ -10,6 +10,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,22 +21,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory(10)->create();
+        
 
-        \App\Models\User::factory()->create([
-            'name' => 'Ahkar Min Htut',
-            'email' => 'ahkar@gmail.com',
-            'password' => Hash::make('ahkar1234')
+        $this->call([
+            // NationSeeder::class,
+            // UserSeeder::class,
+            // CategorySeeder::class,
+            PostSeeder::class,
         ]);
 
-        $categories = ["IT News","Sport","Food & Drinks","Travel"];
-        foreach($categories as $category){
-            Category::factory()->create([
-                "title" => $category,
-                "slug" => Str::slug($category),
-                "user_id" => User::inRandomOrder()->first()->id,
-            ]);
-        }
-        Post::factory(200)->create();
+        // $photos = Storage::allFiles("public");
+        // array_shift($photos);
+        // Storage::delete($photos);
+        // echo "\e[93mStorage cleared!\n";
     }
 }

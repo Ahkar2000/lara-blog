@@ -8,4 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function photos(){
+        return $this->hasMany(Photo::class);
+    }
+
+    public function scopeSearch($query){
+        return $query->when(request('keyword'),function($q){
+            $keyword = request('keyword');
+            $q->orWhere("title","like","%$keyword%")
+                ->orWhere("description","like","%$keyword%");
+        });
+    }
 }

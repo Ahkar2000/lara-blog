@@ -15,11 +15,11 @@
         <div class="mb-3">
             <span class="badge bg-secondary">
                 <i class="bi bi-grid"></i>
-                {{ \App\Models\Category::find($post->category_id)->title }}
+                {{ $post->category->title }}
             </span>
             <span class="badge bg-secondary">
                 <i class="bi bi-person"></i>
-                {{ \App\Models\User::find($post->user_id)->name }}
+                {{ $post->user->name }}
             </span>
             <span class="small mb-0 text-black-50">
                 <i class="bi bi-calendar"></i>
@@ -31,11 +31,14 @@
             </span>
         </div>
         @isset($post->featured_image)
-            <img src="{{ asset('storage/'.$post->featured_image) }}" class="w-100 mb-3" alt="">            
+            <img src="{{ asset('storage/'.$post->featured_image) }}" class="w-100 mb-3 rounded" alt="">            
         @endisset
         <p>
             {{ $post->description }}
         </p>
+        @foreach ($post->photos as $photo)
+            <img src="{{asset('storage/'.$photo->name)}}" height="100" class=" rounded">
+        @endforeach
         <hr>
         <div class="d-flex justify-content-between align-items-center">
             <a href="{{ route('post.create') }}" class="btn btn-primary">Creat New Post</a>

@@ -36,7 +36,9 @@
                         <th>#</th>
                         <th>Title</th>
                         <th>Category</th>
-                        <th>Owner</th>
+                        @if (Auth::user()->role != 'author')
+                            <th>Owner</th>
+                        @endif
                         <th>Control</th>
                         <th>Created</th>
                     </tr>
@@ -49,11 +51,13 @@
                             {{ $post->title }}
                         </td>
                         <td>
-                            {{ App\Models\Category::find($post->category_id)->title }}
+                            {{ $post->category->title }}
                         </td>
-                        <td>
-                            {{ App\Models\User::find($post->user_id)->name }}
-                        </td>
+                        @notAuthor
+                            <td>
+                                {{ $post->user->name }}
+                            </td>
+                        @endnotAuthor
                         <td class=" text-nowrap">
                             <a href="{{ route('post.show',$post->id) }}" class="btn btn-sm btn-outline-dark">
                                 <i class="bi bi-info-circle"></i>

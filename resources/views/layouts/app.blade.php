@@ -53,6 +53,8 @@
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
+                                    <br>
+                                    {{ Auth::user()->role }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -78,7 +80,7 @@
                 <div class="container">
                     <div class="row g-3">
                         <div class="col-lg-3">
-                            @include('sidebar')
+                            @include('layouts.sidebar')
                         </div>
                         <div class="col-lg-9">
                             @yield('content')
