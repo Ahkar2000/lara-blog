@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,6 +43,16 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if('notAuthor',function () {
             return Auth::user()->role != 'author';
+        });
+
+        // View::share('categories',Category::latest("id")->get());
+        View::composer([
+            'index',
+            'detail',
+            'post.create',
+            'post.edit'
+        ],function($view){
+            $view->with('categories',Category::latest('id')->get());
         });
     }
 }

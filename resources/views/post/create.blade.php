@@ -32,7 +32,7 @@
                 class="form-control @error('category')
                     is-invalid
                 @enderror">
-                    @foreach (\App\Models\Category::all() as $category)
+                    @foreach ($categories as $category)
                         <option value="{{ $category->id }}" {{$category->id == old('category') ? 'selected' : ''}}>{{ $category->title }}</option>
                     @endforeach
                 </select>
