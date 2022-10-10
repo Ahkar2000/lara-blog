@@ -1,6 +1,6 @@
 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item ">
-      </x-nav-link name="Home" url="{{ route('page.index') }}">
+      <x-nav-link name="Home" url="{{ route('page.index') }}"/>
     </li>
       @auth
       <li class="nav-item dropdown">
@@ -23,10 +23,10 @@
         </li>
       @else
       <li class="nav-item">
-        </x-nav-link name="Login" url="{{ route('login') }}">
+        <x-nav-link name="Login" url="{{ route('login') }}"/>
       </li>
       <li class="nav-item">
-        </x-nav-link name="Register" url="{{ route('register') }}">
+        <x-nav-link name="Register" url="{{ route('register') }}"/>
       </li>
 
       @endauth

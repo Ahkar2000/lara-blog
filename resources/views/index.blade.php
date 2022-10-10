@@ -3,6 +3,9 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-6">
+                <x-card id="one" class="card">
+                    <x-slot:title>San Kyi Tar</x-slot:title>
+                </x-card>
                 @forelse($posts as $post)
                     <div class="card mb-3">
                         <div class="card-body">
@@ -35,8 +38,6 @@
                         </div>
                     </div>
                 @endforelse
-
-
             </div>
             <div class="col-lg-4">
                 @include('template.sidebar')
