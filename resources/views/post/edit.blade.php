@@ -8,7 +8,7 @@
             @csrf
             @method('put')
         </form>
-            <x-input name="title" label="Post Title" default="{{ $post->title }}" />
+            <x-input name="title" label="Post Title" :default="$post->title" form="updateForm" />
             <div class="mb-3">
                 <label for="category" class="form-label">Select Category</label>
                 <select type="text" id="category" name="category" form="updateForm"

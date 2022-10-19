@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
+
+    protected $with = ['photos','user','category'];
 
     public function category(){
         return $this->belongsTo(Category::class);
@@ -22,10 +25,10 @@ class Post extends Model
     }
 
     public function scopeSearch($query){
-        return $query->when(request('keyword'),function($q){
+        return $query->when(request('keyword'), function ($query) {
             $keyword = request('keyword');
-            $q->orWhere("title","like","%$keyword%")
-                ->orWhere("description","like","%$keyword%");
+            $query->orWhere('title', 'like', "%$keyword%")
+                ->orWhere('description', 'like', "%$keyword%");
         });
     }
 }

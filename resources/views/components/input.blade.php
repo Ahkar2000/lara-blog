@@ -4,7 +4,10 @@
     type="{{ $type }}" 
     id="{{ $name }}" 
     value="{{ old($name,$default) }}" 
-    name="{{ $multiple ? $name."[]" : $name  }}" 
+    name="{{ $multiple ? $name."[]" : $name  }}"
+    @isset($form)
+    form="{{ $form }}" 
+    @endisset
     class="form-control @error($name) is-invalid @enderror @error("$name.*") is-invalid @enderror"
     @isset($multiple) multiple @endisset
     >

@@ -18,6 +18,9 @@
     <a href="{{ route('post.create') }}" class="list-group-item list-group-item-action">
         Create Post
     </a>
+    <a href="{{ route('post.index',['trash'=>true]) }}" class="list-group-item list-group-item-action">
+        <i class="bi bi-trash-fill"></i> Trash
+    </a>
 </div>
 
 <p class="small text-black-50 mb-1">Manage Category</p>

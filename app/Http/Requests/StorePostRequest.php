@@ -28,8 +28,8 @@ class StorePostRequest extends FormRequest
             "category" => "required|exists:categories,id",
             "description" => "required|min:30",
             "photos" => "required",
-            "photos.*" => "mimes:png,jpg,jpeg|max:512",
-            "featured_image" => "nullable|mimes:png,jpg,jpeg|file|max:512"
+            "photos.*" => "mimes:png,jpg,jpeg|max:1024",
+            "featured_image" => "nullable|mimes:png,jpg,jpeg|file|max:1024"
         ];
     }
 }

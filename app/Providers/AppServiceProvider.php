@@ -7,6 +7,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        DB::listen(fn($q)=>logger($q->sql));
+
         // Blade::directive('myname', function ($x) {
         //     return "ahkar min htut".$x;
         // });
@@ -43,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if('notAuthor',function () {
             return Auth::user()->role != 'author';
+        });
+
+        Blade::if('trash',function () {
+            return request()->trash;
         });
 
         // View::share('categories',Category::latest("id")->get());

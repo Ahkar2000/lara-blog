@@ -68,13 +68,30 @@
                                 </a>
                             @endcan
                             @can('delete',$post)
-                                <form action="{{ route('post.destroy',$post->id) }}" method="POST" class=" d-inline-block">
-                                    @csrf
-                                    @method('delete')
-                                    <button class="btn btn-sm btn-outline-dark">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>                         
+                                @trash
+                                    <form action="{{ route('post.destroy',[$post->id,"delete"=>"force"]) }}" method="POST" class=" d-inline-block">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </button>
+                                    </form> 
+                                    <form action="{{ route('post.destroy',[$post->id,"delete"=>"restore"]) }}" method="POST" class=" d-inline-block">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-recycle"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('post.destroy',[$post->id,"delete"=>"soft"]) }}" method="POST" class=" d-inline-block">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>   
+                                @endtrash                    
                             @endcan
                         </td>
                         <td class="text-nowrap">

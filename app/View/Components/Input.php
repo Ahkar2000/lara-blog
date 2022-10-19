@@ -6,19 +6,20 @@ use Illuminate\View\Component;
 
 class Input extends Component
 {
-    public $name,$type,$label,$multiple,$default;
+    public $name,$type,$label,$multiple,$default,$form;
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($name="input_name",$type="text",$label="Input Label",$multiple = false,$default = null)
+    public function __construct($name="input_name",$type="text",$label="Input Label",$multiple = false,$default = null,$form=null)
     {
         $this->name = $name;
         $this->type = $type;
         $this->label = $label;
         $this->multiple = $multiple;
         $this->default = $default;
+        $this->form = $form;
     }
 
     /**

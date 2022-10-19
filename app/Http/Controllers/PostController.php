@@ -6,7 +6,6 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Photo;
-use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -21,13 +20,14 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::when(request('keyword'),function($query){
-            $keyword = request('keyword');
-            $query->orWhere('title','like',"%$keyword%")
-            ->orWhere('description','like',"%$keyword%");
-        })->when(Auth::user()->isAuthor(),fn($q)=>$q->where('user_id',Auth::id()))
-        ->latest('id')->with(['category','user'])->paginate(10)->withQueryString();
-        return view('post.index',compact('posts'));
+        $posts = Post::search()
+        ->when(Auth::user()->isAuthor(), fn ($q) => $q->where('user_id', Auth::id()))
+        ->latest('id')
+        ->when(request()->trash,fn($q)=>$q->onlyTrashed())
+        // ->with(['category', 'user'])
+        ->paginate(10)
+        ->withQueryString();
+        return view('post.index', compact('posts'));
     }
 
     /**
@@ -37,8 +37,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        $links = ["post"=>route('post.index'),"create post"=>route('post.create')];
-        return view('post.create',compact("links"));
+        $links = ["post" => route('post.index'), "create post" => route('post.create')];
+        return view('post.create', compact("links"));
     }
 
     /**
@@ -57,28 +57,33 @@ class PostController extends Controller
         $post->excerpt = Str::words($request->description, 50, ' ...');
         $post->user_id = Auth::id();
         $post->category_id = $request->category;
-        if($request->hasFile('featured_image')){
-            $newName = uniqid()."_featured_image.".$request->file('featured_image')->extension();
-            $request->file('featured_image')->storeAs('public',$newName);
+        if ($request->hasFile('featured_image')) {
+            $newName = uniqid() . "_featured_image." . $request->file('featured_image')->extension();
+            $request->file('featured_image')->storeAs('public', $newName);
             $post->featured_image = $newName;
         }
         $post->save();
 
         //saving photos
-
-        foreach($request->photos as $photo){
+        $savedPhotos = [];
+        foreach ($request->photos as $key=>$photo) {
             //1.save to storage
-            $newName = uniqid()."_postphoto.".$photo->extension();
-            $photo->storeAs('public',$newName);
-            
-            //2.save to db
-            $photo = new Photo();
-            $photo->post_id = $post->id;
-            $photo->name = $newName;
-            $photo->save();
+            $newName = uniqid() . "_postphoto." . $photo->extension();
+            $photo->storeAs('public', $newName);
+            $savedPhotos[$key] = [
+                "post_id" => $post->id,
+                "name" => $newName
+            ];
         }
 
-        return to_route('post.index')->with('status','Post is added.');
+        //2.save to db
+        // $photo = new Photo();
+        // $photo->post_id = $post->id;
+        // $photo->name = $newName;
+        // $photo->save();
+        Photo::insert($savedPhotos);
+
+        return to_route('post.index')->with('status', 'Post is added.');
     }
 
     /**
@@ -90,8 +95,8 @@ class PostController extends Controller
     public function show(Post $post)
     {
         // return $post;
-        Gate::authorize('view',$post);
-        return view('post.show',compact('post'));
+        Gate::authorize('view', $post);
+        return view('post.show', compact('post'));
     }
 
     /**
@@ -102,9 +107,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        Gate::authorize('update',$post);
-        $links = ["post"=>route('post.index'),"edit post"=>route('post.edit',$post->id)];
-        return view('post.edit',compact('post','links'));
+        Gate::authorize('update', $post);
+        $links = ["post" => route('post.index'), "edit post" => route('post.edit', $post->id)];
+        return view('post.edit', compact('post', 'links'));
     }
 
     /**
@@ -117,38 +122,43 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         if (Gate::denies('update', $post)) {
-            return abort(403,"You are not allowed to update.");
+            return abort(403, "You are not allowed to update.");
         }
+        $updatedPhotos = [];
         $post->title = $request->title;
         $post->slug = Str::slug($request->title);
         $post->description = $request->description;
         $post->excerpt = Str::words($request->description, 50, ' ...');
         $post->user_id = Auth::id();
         $post->category_id = $request->category;
-        if($request->hasFile('featured_image')){
+        if ($request->hasFile('featured_image')) {
             //delete photo
-            Storage::delete('public/'.$post->featured_image);
+            Storage::delete('public/' . $post->featured_image);
 
             //update and upload new photo
-            $newName = uniqid()."_featured_image.".$request->file('featured_image')->extension();
-            $request->file('featured_image')->storeAs('public',$newName);
+            $newName = uniqid() . "_featured_image." . $request->file('featured_image')->extension();
+            $request->file('featured_image')->storeAs('public', $newName);
             $post->featured_image = $newName;
         }
         $post->update();
 
-        foreach($request->photos as $photo){
+        foreach ($request->photos as $photo) {
             //1.save to storage
-            $newName = uniqid()."_postphoto.".$photo->extension();
-            $photo->storeAs('public',$newName);
-            
-            //2.save to db
-            $photo = new Photo();
-            $photo->post_id = $post->id;
-            $photo->name = $newName;
-            $photo->save();
+            $newName = uniqid() . "_postphoto." . $photo->extension();
+            $photo->storeAs('public', $newName);
+            $updatedPhotos = [
+                "post_id" => $post->id,
+                "name" => $newName
+            ];
         }
+        //2.save to db
+        // $photo = new Photo();
+        // $photo->post_id = $post->id;
+        // $photo->name = $newName;
+        // $photo->save();
+        Photo::insert($updatedPhotos);
 
-        return to_route('post.index')->with('status','Post is updated.');
+        return to_route('post.index')->with('status', 'Post is updated.');
     }
 
     /**
@@ -157,25 +167,50 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        if(Gate::denies('delete',$post)){
-            return abort(403,"You are not allowed to delete.");
-        }
-        if(isset($post->featured_image)){
-            Storage::delete('public/'.$post->featured_image);
+        $post = Post::withTrashed()->findOrFail($id)->first();
+        
+        if (Gate::denies('delete', $post)) {
+            return abort(403, "You are not allowed to delete.");
         }
 
-        foreach($post->photos as $photo){
-            //delete from storage
-            Storage::delete('public/'.$photo->name);
+        // dd($post->photos->pluck('id'));
+
+        if(request('delete') === 'force'):
+
+            if (isset($post->featured_image)) {
+                Storage::delete('public/' . $post->featured_image);
+            }
+
+            // foreach ($post->photos as $photo) {
+            //     //delete from storage
+            //     Storage::delete('public/' . $photo->name);
+            // }
+
+            Storage::delete($post->photos->map(fn($photo)=>"public/".$photo->name)->toArray());
+
+            //Photo::destroy($post->photos->pluck('id'));
+            Photo::where('post_id',$post->id)->delete();
 
             //delete from table
-            $photo->delete();
-        }
+            // $photo->delete();
 
-        $post->delete();
+            Post::withTrashed()->findOrFail($id)->forceDelete();
+            $message = "Post is deleted successfully";
+
+        elseif(request('delete') === 'restore'):
+
+            Post::withTrashed()->findOrFail($id)->restore();
+            $message = "Post is restored successfully";
         
-        return to_route('post.index')->with('status','Post is deleted.');
+        elseif(request('delete') === 'soft'):
+
+            Post::withTrashed()->findOrFail($id)->delete();
+            $message = "Post is moved to trash successfully";
+
+        endif;
+
+        return to_route('post.index')->with('status', $message);
     }
 }
